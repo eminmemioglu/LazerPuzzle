@@ -1,0 +1,31 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
+        gradlePluginPortal()
+    }
+}
+
+allprojects {
+    apply plugin: 'eclipse'
+    apply plugin: 'idea'
+}
+
+configure(subprojects) {
+    apply plugin: 'java-library'
+    sourceCompatibility = 11
+    targetCompatibility = 11
+
+    repositories {
+        mavenCentral()
+        maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
+    }
+}
+
+subprojects {
+    version = '1.0.0'
+    ext {
+        appName = 'Oyun'
+        gdxVersion = '1.13.1'
+    }
+}
