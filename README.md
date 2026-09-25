@@ -49,6 +49,14 @@ cd LazerPuzzle
 
 ## 🎮 Kontroller
 
+Oyun açıldığında ana menü görünür. **Oyna** mevcut bulmacayı başlatır.
+Sağ üstteki **Müzik** düğmesi açık/kapalı tercihini değiştirir; **Ayarlar**
+düğmesi aynı tercihin bulunduğu bir pencere açar. Bu ilk taslakta henüz
+müzik dosyası yoktur; tercih yalnızca uygulama açıkken korunur.
+
+Oyun sırasında **ESC** ile menüye dönülür. Tekrar **Oyna** seçildiğinde
+bulmaca baştan başlar. Ayarlar penceresi **Kapat** veya **ESC** ile kapanır.
+
 ### Oyuncu 1 (Mavi Kutu)
 
 | Tuş | Eylem |
@@ -70,7 +78,8 @@ cd LazerPuzzle
 ```
 ├── core/                          # Oyun mantığı (platform bağımsız)
 │   └── src/main/java/com/mygame/
-│       ├── MainGame.java          # libGDX yaşam döngüsü
+│       ├── MainGame.java          # libGDX yaşam döngüsü & ekran geçişleri
+│       ├── MenuScreen.java        # Tıklanabilir ana menü & ayarlar taslağı
 │       ├── GameScreen.java        # Ana oyun ekranı
 │       ├── Player.java            # Oyuncu kontrolü & etkileşim
 │       ├── Mirror.java            # Hareketli & döndürülebilir ayna

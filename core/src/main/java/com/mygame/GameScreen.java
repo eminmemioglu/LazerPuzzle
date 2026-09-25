@@ -1,5 +1,7 @@
 package com.mygame;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -34,8 +36,10 @@ public class GameScreen extends ScreenAdapter {
     private final TargetReceiver targetRed;
     private final TargetReceiver targetCyan;
     private final LaserSystem laserSystem;
+    private final MainGame game;
 
-    public GameScreen() {
+    public GameScreen(MainGame game) {
+        this.game = game;
         camera = new OrthographicCamera();
         viewport = new FitViewport(WORLD_WIDTH, WORLD_HEIGHT, camera);
         viewport.apply();
@@ -70,6 +74,11 @@ public class GameScreen extends ScreenAdapter {
 
     @Override
     public void render(float delta) {
+        if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
+            game.showMenu();
+            return;
+        }
+
         // Clear background with deep dark slate
         ScreenUtils.clear(0.08f, 0.10f, 0.14f, 1f);
 
