@@ -19,8 +19,12 @@ public class MainGame extends Game {
         changeScreen(new MenuScreen(this));
     }
 
-    public void startGame() {
-        changeScreen(new GameScreen(this));
+    public void showLevelSelection() {
+        changeScreen(new LevelSelectScreen(this));
+    }
+
+    public void startGame(LevelDefinition level) {
+        changeScreen(new GameScreen(this, level));
     }
 
     private void changeScreen(Screen nextScreen) {

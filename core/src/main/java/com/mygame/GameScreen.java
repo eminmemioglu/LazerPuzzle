@@ -5,6 +5,8 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
@@ -37,9 +39,13 @@ public class GameScreen extends ScreenAdapter {
     private final TargetReceiver targetCyan;
     private final LaserSystem laserSystem;
     private final MainGame game;
+    private final LevelDefinition level;
+    private final SpriteBatch hudBatch;
+    private final BitmapFont hudFont;
 
-    public GameScreen(MainGame game) {
+    public GameScreen(MainGame game, LevelDefinition level) {
         this.game = game;
+        this.level = level;
         camera = new OrthographicCamera();
         viewport = new FitViewport(WORLD_WIDTH, WORLD_HEIGHT, camera);
         viewport.apply();
@@ -48,26 +54,28 @@ public class GameScreen extends ScreenAdapter {
         camera.update();
 
         shapeRenderer = new ShapeRenderer();
+        hudBatch = new SpriteBatch();
+        hudFont = new BitmapFont();
 
         // 1. Two players
         p1 = Player.createPlayer1(200f, 260f);
         p2 = Player.createPlayer2(200f, 460f);
 
         // 2. Triangular optical prism (splits laser into 2 distinct colors)
-        prism = new Prism(400f, 360f, 0f);
+        prism = new Prism(level.prismX, 360f, 0f);
 
         // 3. Two movable and rotatable mirrors
         mirrors = new Array<>();
-        mirrors.add(new Mirror(1, 680f, 520f, 135f, 90f));
-        mirrors.add(new Mirror(2, 680f, 200f, 45f, 90f));
+        mirrors.add(new Mirror(1, level.mirror1X, level.mirror1Y, level.mirror1Angle, 90f));
+        mirrors.add(new Mirror(2, level.mirror2X, level.mirror2Y, level.mirror2Angle, 90f));
 
         // 4. Fixed unidirectional laser system (centered at left wall, shooting East)
         laserSystem = new LaserSystem();
 
         // 5. Two color-matched target receivers at the other end of the map
         targets = new Array<>();
-        targetRed = new TargetReceiver(1140f, 560f, LaserSystem.COLOR_RED, "HEDEF 1 (KIRMIZI)");
-        targetCyan = new TargetReceiver(1140f, 180f, LaserSystem.COLOR_CYAN, "HEDEF 2 (MAVİ)");
+        targetRed = new TargetReceiver(level.redX, level.redY, LaserSystem.COLOR_RED, "HEDEF 1 (KIRMIZI)");
+        targetCyan = new TargetReceiver(level.cyanX, level.cyanY, LaserSystem.COLOR_CYAN, "HEDEF 2 (MAVİ)");
         targets.add(targetRed);
         targets.add(targetCyan);
     }
@@ -75,12 +83,13 @@ public class GameScreen extends ScreenAdapter {
     @Override
     public void render(float delta) {
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
-            game.showMenu();
+            game.showLevelSelection();
             return;
         }
 
         // Clear background with deep dark slate
         ScreenUtils.clear(0.08f, 0.10f, 0.14f, 1f);
+        viewport.apply();
 
         // 1. Update target animations
         for (TargetReceiver tr : targets) {
@@ -123,6 +132,14 @@ public class GameScreen extends ScreenAdapter {
 
         // 10. Render top control bar & status indicators
         renderHUD();
+        hudBatch.setProjectionMatrix(camera.combined);
+        hudBatch.begin();
+        hudFont.draw(hudBatch, "BÖLÜM " + level.number + "  |  ESC: Bölüm seçimi", 64f, WORLD_HEIGHT - 32f);
+        hudBatch.end();
+    }
+
+    public int getLevelNumber() {
+        return level.number;
     }
 
     private void renderHUD() {
@@ -210,5 +227,7 @@ public class GameScreen extends ScreenAdapter {
     @Override
     public void dispose() {
         shapeRenderer.dispose();
+        hudBatch.dispose();
+        hudFont.dispose();
     }
 }
