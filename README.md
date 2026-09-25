@@ -49,6 +49,17 @@ cd LazerPuzzle
 
 ## 🎮 Kontroller
 
+Oyun açıldığında ana menü görünür. **Oyna** bölüm seçme ekranını açar.
+**1, 2, 3, 4** düğmelerinden biri seçildiğinde ilgili bölüm baştan başlar.
+İlk bölüm mevcut bulmacadır; diğer üç bölüm farklı geçici prizma, ayna ve
+hedef yerleşimleri kullanır. Bölüm tasarımları ve zorluk dengesi daha sonra hazırlanacaktır.
+Sağ üstteki **Müzik** düğmesi açık/kapalı tercihini değiştirir; **Ayarlar**
+düğmesi aynı tercihin bulunduğu bir pencere açar. Bu ilk taslakta henüz
+müzik dosyası yoktur; tercih yalnızca uygulama açıkken korunur.
+
+Oyun sırasında **ESC** ile bölüm seçimine dönülür. Bölüm seçiminde **Geri**
+veya **ESC** ana menüye döndürür. Ayarlar penceresi **Kapat** veya **ESC** ile kapanır.
+
 ### Oyuncu 1 (Mavi Kutu)
 
 | Tuş | Eylem |
@@ -70,7 +81,11 @@ cd LazerPuzzle
 ```
 ├── core/                          # Oyun mantığı (platform bağımsız)
 │   └── src/main/java/com/mygame/
-│       ├── MainGame.java          # libGDX yaşam döngüsü
+│       ├── MainGame.java          # libGDX yaşam döngüsü & ekran geçişleri
+│       ├── MenuScreen.java        # Tıklanabilir ana menü & ayarlar taslağı
+│       ├── LevelSelectScreen.java # 1–4 bölüm seçimi
+│       ├── LevelDefinition.java   # Bölümlerin başlangıç yerleşimleri
+│       ├── MenuSkin.java          # Menülerin ortak geçici görünümü
 │       ├── GameScreen.java        # Ana oyun ekranı
 │       ├── Player.java            # Oyuncu kontrolü & etkileşim
 │       ├── Mirror.java            # Hareketli & döndürülebilir ayna
