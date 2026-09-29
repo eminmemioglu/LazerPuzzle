@@ -84,6 +84,29 @@ public class Player {
         float deltaX = x - previousX;
         float deltaY = y - previousY;
 
+        updateInteractions(delta, deltaX, deltaY, mirrors, prism, mapWidth, mapHeight);
+    }
+
+    /** Resolve both bodies before moving held objects or checking interactions. */
+    public static void updatePair(float delta, Player first, Player second, Array<Mirror> mirrors,
+                                  Prism prism, Array<Platform> platforms, float mapWidth, float mapHeight) {
+        delta = MathUtils.clamp(delta, 0f, 0.1f);
+        float firstX = first.x, firstY = first.y;
+        float secondX = second.x, secondY = second.y;
+        movePair(delta, first, second, first.horizontalInput(), second.horizontalInput(),
+            Gdx.input.isKeyJustPressed(first.keyJump), Gdx.input.isKeyJustPressed(second.keyJump),
+            platforms, mapWidth, mapHeight);
+        first.updateInteractions(delta, first.x - firstX, first.y - firstY, mirrors, prism, mapWidth, mapHeight);
+        second.updateInteractions(delta, second.x - secondX, second.y - secondY, mirrors, prism, mapWidth, mapHeight);
+    }
+
+    private float horizontalInput() {
+        return (Gdx.input.isKeyPressed(keyRight) ? 1f : 0f) - (Gdx.input.isKeyPressed(keyLeft) ? 1f : 0f);
+    }
+
+    private void updateInteractions(float delta, float deltaX, float deltaY, Array<Mirror> mirrors,
+                                    Prism prism, float mapWidth, float mapHeight) {
+
         float cx = getCenterX();
         float cy = getCenterY();
 
@@ -172,8 +195,86 @@ public class Player {
                         float mapWidth, float mapHeight) {
         float remaining = MathUtils.clamp(delta, 0f, 0.1f);
         if (remaining == 0f) return;
+        prepareJump(jumpPressed, platforms, null);
+        while (remaining > 0f) {
+            float step = Math.min(remaining, 1f / 120f);
+            remaining -= step;
+            moveHorizontal(MathUtils.clamp(moveX, -1f, 1f) * speed * step, platforms, mapWidth);
+            fall(step, platforms, mapHeight);
+        }
+    }
 
-        grounded = false;
+    /** Equal-mass contact resolution, independent of which player is updated first. */
+    static void movePair(float delta, Player a, Player b, float inputA, float inputB,
+                         boolean jumpA, boolean jumpB, Array<Platform> platforms,
+                         float mapWidth, float mapHeight) {
+        float remaining = MathUtils.clamp(delta, 0f, 0.1f);
+        if (remaining == 0f) return;
+        a.prepareJump(jumpA, platforms, b);
+        b.prepareJump(jumpB, platforms, a);
+        while (remaining > 0f) {
+            float step = Math.min(remaining, 1f / 120f);
+            remaining -= step;
+            float ax = a.x, bx = b.x, ay = a.y, by = b.y;
+            boolean aRidesB = a.standsOn(b) && a.velocityY <= b.velocityY;
+            boolean bRidesA = b.standsOn(a) && b.velocityY <= a.velocityY;
+
+            a.moveHorizontal(MathUtils.clamp(inputA, -1f, 1f) * a.speed * step, platforms, mapWidth);
+            b.moveHorizontal(MathUtils.clamp(inputB, -1f, 1f) * b.speed * step, platforms, mapWidth);
+            if (aRidesB) a.moveHorizontal(b.x - bx, platforms, mapWidth);
+            if (bRidesA) b.moveHorizontal(a.x - ax, platforms, mapWidth);
+
+            if (a.y < b.y + b.size - 0.001f && a.y + a.size > b.y + 0.001f) {
+                Player left = ax < bx ? a : b;
+                Player right = left == a ? b : a;
+                float overlap = left.x + left.size - right.x;
+                if (overlap > 0f) {
+                    // Both share the displacement; an immovable wall blocks the pusher too.
+                    left.moveHorizontal(-overlap / 2f, platforms, mapWidth);
+                    right.moveHorizontal(overlap / 2f, platforms, mapWidth);
+                    overlap = Math.max(0f, left.x + left.size - right.x);
+                    left.moveHorizontal(-overlap, platforms, mapWidth);
+                    overlap = Math.max(0f, left.x + left.size - right.x);
+                    right.moveHorizontal(overlap, platforms, mapWidth);
+                }
+            }
+
+            a.fall(step, platforms, mapHeight);
+            b.fall(step, platforms, mapHeight);
+            if (a.overlapsHorizontally(b)) {
+                if (ay >= by + b.size - 0.01f) {
+                    landOnPlayer(a, b, platforms, mapHeight);
+                } else if (by >= ay + a.size - 0.01f) {
+                    landOnPlayer(b, a, platforms, mapHeight);
+                }
+            }
+        }
+    }
+
+    private static void landOnPlayer(Player upper, Player lower, Array<Platform> platforms, float mapHeight) {
+        float overlap = lower.y + lower.size - upper.y;
+        if (overlap < -0.01f) return;
+        if (overlap > 0f) upper.moveVertical(overlap, platforms, mapHeight);
+        float blocked = lower.y + lower.size - upper.y;
+        if (blocked > 0.001f) {
+            // A ceiling above a stack stops both bodies instead of crushing them together.
+            lower.moveVertical(-blocked, platforms, mapHeight);
+            lower.velocityY = Math.min(0f, lower.velocityY);
+        }
+        upper.velocityY = lower.velocityY;
+        upper.grounded = true;
+    }
+
+    private boolean overlapsHorizontally(Player other) {
+        return x < other.x + other.size && x + size > other.x;
+    }
+
+    private boolean standsOn(Player other) {
+        return overlapsHorizontally(other) && Math.abs(y - other.y - other.size) < 0.01f;
+    }
+
+    private void prepareJump(boolean jumpPressed, Array<Platform> platforms, Player other) {
+        grounded = other != null && standsOn(other) && velocityY <= other.velocityY + 0.01f;
         for (Platform platform : platforms) {
             if (x < platform.right() && x + size > platform.x
                 && Math.abs(y - platform.top()) < 0.01f && velocityY <= 0f) {
@@ -185,42 +286,44 @@ public class Player {
             velocityY = JUMP_SPEED;
             grounded = false;
         }
+    }
 
-        // Small steps keep side/corner collisions stable, even during a slow frame.
-        while (remaining > 0f) {
-            float step = Math.min(remaining, 1f / 120f);
-            remaining -= step;
-            float oldX = x;
-            x = MathUtils.clamp(x + MathUtils.clamp(moveX, -1f, 1f) * speed * step,
-                4f, mapWidth - size - 4f);
-            for (Platform platform : platforms) {
-                if (y >= platform.top() || y + size <= platform.y) continue;
-                if (oldX + size <= platform.x && x + size > platform.x) {
-                    x = platform.x - size;
-                } else if (oldX >= platform.right() && x < platform.right()) {
-                    x = platform.right();
-                }
+    private void moveHorizontal(float amount, Array<Platform> platforms, float mapWidth) {
+        float oldX = x;
+        x = MathUtils.clamp(x + amount, 4f, mapWidth - size - 4f);
+        for (Platform platform : platforms) {
+            if (y >= platform.top() || y + size <= platform.y) continue;
+            if (oldX + size <= platform.x && x + size > platform.x) {
+                x = platform.x - size;
+            } else if (oldX >= platform.right() && x < platform.right()) {
+                x = platform.right();
             }
+        }
+    }
 
-            float oldY = y;
-            velocityY = Math.max(velocityY - GRAVITY * step, -MAX_FALL_SPEED);
-            y += velocityY * step;
-            grounded = false;
-            for (Platform platform : platforms) {
-                if (x >= platform.right() || x + size <= platform.x) continue;
-                if (oldY >= platform.top() && y <= platform.top()) {
-                    y = platform.top();
-                    velocityY = 0f;
-                    grounded = true;
-                } else if (oldY + size <= platform.y && y + size >= platform.y) {
-                    y = platform.y - size;
-                    velocityY = 0f;
-                }
+    private void fall(float step, Array<Platform> platforms, float mapHeight) {
+        velocityY = Math.max(velocityY - GRAVITY * step, -MAX_FALL_SPEED);
+        grounded = false;
+        moveVertical(velocityY * step, platforms, mapHeight);
+    }
+
+    private void moveVertical(float amount, Array<Platform> platforms, float mapHeight) {
+        float oldY = y;
+        y += amount;
+        for (Platform platform : platforms) {
+            if (x >= platform.right() || x + size <= platform.x) continue;
+            if (oldY >= platform.top() && y <= platform.top()) {
+                y = platform.top();
+                velocityY = 0f;
+                grounded = true;
+            } else if (oldY + size <= platform.y && y + size >= platform.y) {
+                y = platform.y - size;
+                velocityY = 0f;
             }
-            if (y > mapHeight - size - 4f) {
-                y = mapHeight - size - 4f;
-                velocityY = Math.min(velocityY, 0f);
-            }
+        }
+        if (y > mapHeight - size - 4f) {
+            y = mapHeight - size - 4f;
+            velocityY = Math.min(velocityY, 0f);
         }
     }
 

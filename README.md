@@ -84,6 +84,11 @@ tekrar basmak gerekir. İlk bölümde prizma ve aynalara ulaşmak için basamakl
 bulunur; diğer bölüm taslaklarında şimdilik yalnızca zemin vardır. Yerçekimi
 karakterlere uygulanır; aynalar ve prizma mevcut taşıma davranışını korur.
 
+Karakterler birbirlerinin içinden geçemez. Yandan yürüyerek birbirlerini
+itebilir; karşılıklı aynı güçte itişince dururlar. Diğer oyuncunun üstüne
+zıplayıp üzerinde durabilir, onunla birlikte taşınabilir ve üzerinden tekrar
+zıplayabilirler. Alttaki oyuncu da üstündeki oyuncuyla birlikte zıplayabilir.
+
 ## 📁 Proje Yapısı
 
 ```

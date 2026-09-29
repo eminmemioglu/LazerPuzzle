@@ -99,8 +99,7 @@ public class GameScreen extends ScreenAdapter {
         }
 
         // 2. Update player inputs & mirror/prism grabbing and rotation
-        p1.update(delta, mirrors, prism, platforms, WORLD_WIDTH, WORLD_HEIGHT);
-        p2.update(delta, mirrors, prism, platforms, WORLD_WIDTH, WORLD_HEIGHT);
+        Player.updatePair(delta, p1, p2, mirrors, prism, platforms, WORLD_WIDTH, WORLD_HEIGHT);
 
         // 3. Update optical ray tracing with prism dispersion & mirror reflections
         laserSystem.update(mirrors, prism, p1, p2, targets);
