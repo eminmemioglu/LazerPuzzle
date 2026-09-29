@@ -1,6 +1,8 @@
 package com.mygame;
 
-/** Initial layouts. Level one preserves the original puzzle; the others are placeholders. */
+import com.badlogic.gdx.utils.Array;
+
+/** Initial optical layouts, with platform traversal introduced in level one. */
 public enum LevelDefinition {
     LEVEL_1(1, 400f, 680f, 520f, 135f, 680f, 200f, 45f, 1140f, 560f, 1140f, 180f),
     LEVEL_2(2, 460f, 740f, 480f, 110f, 740f, 240f, 70f, 1080f, 500f, 1080f, 220f),
@@ -12,6 +14,18 @@ public enum LevelDefinition {
     public final float mirror1X, mirror1Y, mirror1Angle;
     public final float mirror2X, mirror2Y, mirror2Angle;
     public final float redX, redY, cyanX, cyanY;
+
+    public Array<Platform> createPlatforms() {
+        Array<Platform> platforms = new Array<>();
+        platforms.add(new Platform(0f, 0f, GameScreen.WORLD_WIDTH, 64f));
+        if (this == LEVEL_1) {
+            platforms.add(new Platform(280f, 148f, 200f, 20f));
+            platforms.add(new Platform(500f, 252f, 120f, 20f));
+            platforms.add(new Platform(340f, 320f, 120f, 20f));
+            platforms.add(new Platform(640f, 432f, 160f, 20f));
+        }
+        return platforms;
+    }
 
     LevelDefinition(int number, float prismX,
                     float mirror1X, float mirror1Y, float mirror1Angle,

@@ -1,3 +1,11 @@
 dependencies {
     api "com.badlogicgames.gdx:gdx:$gdxVersion"
 }
+
+tasks.register('physicsTest', JavaExec) {
+    dependsOn testClasses
+    classpath = sourceSets.test.runtimeClasspath
+    mainClass = 'com.mygame.PlayerPhysicsTest'
+}
+
+check.dependsOn physicsTest

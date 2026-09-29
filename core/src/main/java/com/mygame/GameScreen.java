@@ -34,6 +34,7 @@ public class GameScreen extends ScreenAdapter {
     private final Player p2;
     private final Prism prism;
     private final Array<Mirror> mirrors;
+    private final Array<Platform> platforms;
     private final Array<TargetReceiver> targets;
     private final TargetReceiver targetRed;
     private final TargetReceiver targetCyan;
@@ -58,8 +59,9 @@ public class GameScreen extends ScreenAdapter {
         hudFont = new BitmapFont();
 
         // 1. Two players
-        p1 = Player.createPlayer1(200f, 260f);
-        p2 = Player.createPlayer2(200f, 460f);
+        platforms = level.createPlatforms();
+        p1 = Player.createPlayer1(140f, 110f);
+        p2 = Player.createPlayer2(220f, 110f);
 
         // 2. Triangular optical prism (splits laser into 2 distinct colors)
         prism = new Prism(level.prismX, 360f, 0f);
@@ -97,8 +99,8 @@ public class GameScreen extends ScreenAdapter {
         }
 
         // 2. Update player inputs & mirror/prism grabbing and rotation
-        p1.update(delta, mirrors, prism, WORLD_WIDTH, WORLD_HEIGHT);
-        p2.update(delta, mirrors, prism, WORLD_WIDTH, WORLD_HEIGHT);
+        p1.update(delta, mirrors, prism, platforms, WORLD_WIDTH, WORLD_HEIGHT);
+        p2.update(delta, mirrors, prism, platforms, WORLD_WIDTH, WORLD_HEIGHT);
 
         // 3. Update optical ray tracing with prism dispersion & mirror reflections
         laserSystem.update(mirrors, prism, p1, p2, targets);
@@ -109,6 +111,7 @@ public class GameScreen extends ScreenAdapter {
 
         // 4. Render 2D map grid and borders
         drawMapGrid();
+        drawPlatforms();
 
         // 5. Render color-matched target receivers
         for (TargetReceiver tr : targets) {
@@ -135,6 +138,7 @@ public class GameScreen extends ScreenAdapter {
         hudBatch.setProjectionMatrix(camera.combined);
         hudBatch.begin();
         hudFont.draw(hudBatch, "BÖLÜM " + level.number + "  |  ESC: Bölüm seçimi", 64f, WORLD_HEIGHT - 32f);
+        hudFont.draw(hudBatch, "P1: A/D + W (zipla)  |  P2: Sol/Sag + Yukari (zipla)", 490f, WORLD_HEIGHT - 32f);
         hudBatch.end();
     }
 
@@ -196,6 +200,17 @@ public class GameScreen extends ScreenAdapter {
         if (allPowered) {
             shapeRenderer.setColor(Color.WHITE);
             shapeRenderer.rect(WORLD_WIDTH / 2f - 180f, WORLD_HEIGHT - 62f, 360f, 46f);
+        }
+        shapeRenderer.end();
+    }
+
+    private void drawPlatforms() {
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        for (Platform platform : platforms) {
+            shapeRenderer.setColor(0.20f, 0.27f, 0.35f, 1f);
+            shapeRenderer.rect(platform.x, platform.y, platform.width, platform.height);
+            shapeRenderer.setColor(0.45f, 0.65f, 0.72f, 1f);
+            shapeRenderer.rect(platform.x, platform.top() - 4f, platform.width, 4f);
         }
         shapeRenderer.end();
     }

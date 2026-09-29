@@ -51,7 +51,7 @@ cd LazerPuzzle
 
 Oyun açıldığında ana menü görünür. **Oyna** bölüm seçme ekranını açar.
 **1, 2, 3, 4** düğmelerinden biri seçildiğinde ilgili bölüm baştan başlar.
-İlk bölüm mevcut bulmacadır; diğer üç bölüm farklı geçici prizma, ayna ve
+İlk bölüm platformlar üzerinden ulaşılan mevcut bulmacadır; diğer üç bölüm farklı geçici prizma, ayna ve
 hedef yerleşimleri kullanır. Bölüm tasarımları ve zorluk dengesi daha sonra hazırlanacaktır.
 Sağ üstteki **Müzik** düğmesi açık/kapalı tercihini değiştirir; **Ayarlar**
 düğmesi aynı tercihin bulunduğu bir pencere açar. Bu ilk taslakta henüz
@@ -64,7 +64,8 @@ veya **ESC** ana menüye döndürür. Ayarlar penceresi **Kapat** veya **ESC** i
 
 | Tuş | Eylem |
 |---|---|
-| `W` `A` `S` `D` | Hareket |
+| `A` / `D` | Sola / sağa yürü |
+| `W` | Yerdeyken zıpla |
 | `SPACE` (Boşluk) | Yakındaki aynayı/prizmayı tut ve taşı |
 | `Q` / `E` | Döndür (tek basış: 3.5° minik adım, basılı tutma: akıcı dönüş) |
 
@@ -72,9 +73,16 @@ veya **ESC** ana menüye döndürür. Ayarlar penceresi **Kapat** veya **ESC** i
 
 | Tuş | Eylem |
 |---|---|
-| `↑` `←` `↓` `→` | Hareket |
+| `←` / `→` | Sola / sağa yürü |
+| `↑` | Yerdeyken zıpla |
 | `ENTER` | Yakındaki aynayı/prizmayı tut ve taşı |
 | `K` / `L` | Döndür (tek basış: 3.5° minik adım, basılı tutma: akıcı dönüş) |
+
+Karakterler yerçekimiyle düşer ve platformlara basar. Zıplama tuşuna basılı
+tutmak uçurmaz veya tekrar zıplatmaz; yeniden zıplamak için yere inip tuşa
+tekrar basmak gerekir. İlk bölümde prizma ve aynalara ulaşmak için basamaklar
+bulunur; diğer bölüm taslaklarında şimdilik yalnızca zemin vardır. Yerçekimi
+karakterlere uygulanır; aynalar ve prizma mevcut taşıma davranışını korur.
 
 ## 📁 Proje Yapısı
 
@@ -88,6 +96,7 @@ veya **ESC** ana menüye döndürür. Ayarlar penceresi **Kapat** veya **ESC** i
 │       ├── MenuSkin.java          # Menülerin ortak geçici görünümü
 │       ├── GameScreen.java        # Ana oyun ekranı
 │       ├── Player.java            # Oyuncu kontrolü & etkileşim
+│       ├── Platform.java          # Katı zemin ve basamak sınırları
 │       ├── Mirror.java            # Hareketli & döndürülebilir ayna
 │       ├── Prism.java             # Üçgen optik prizma
 │       ├── LaserSystem.java       # Sabit lazer & ışın izleme

@@ -5,7 +5,6 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 
 /**
@@ -18,11 +17,15 @@ public class Player {
     private float y;
     private final float size = 34f;
     private final float speed = 320f;
+    private static final float GRAVITY = 1800f;
+    private static final float JUMP_SPEED = 720f;
+    private static final float MAX_FALL_SPEED = 1100f;
+    private float velocityY;
+    private boolean grounded;
     private final Color color;
 
     // Key configuration
-    private final int keyUp;
-    private final int keyDown;
+    private final int keyJump;
     private final int keyLeft;
     private final int keyRight;
     private final int keyGrab;
@@ -34,15 +37,14 @@ public class Player {
     private final float grabRange = 70f;
 
     public Player(int id, float startX, float startY, Color color,
-                  int up, int down, int left, int right,
+                  int jump, int left, int right,
                   int grab, int rotLeft, int rotRight) {
         this.id = id;
         this.x = startX - size / 2f;
         this.y = startY - size / 2f;
         this.color = color;
 
-        this.keyUp = up;
-        this.keyDown = down;
+        this.keyJump = jump;
         this.keyLeft = left;
         this.keyRight = right;
         this.keyGrab = grab;
@@ -54,7 +56,7 @@ public class Player {
         return new Player(
             1, startX, startY,
             Color.valueOf("38bdf8"), // Bright Sky Blue
-            Input.Keys.W, Input.Keys.S, Input.Keys.A, Input.Keys.D,
+            Input.Keys.W, Input.Keys.A, Input.Keys.D,
             Input.Keys.SPACE, Input.Keys.Q, Input.Keys.E
         );
     }
@@ -63,35 +65,24 @@ public class Player {
         return new Player(
             2, startX, startY,
             Color.valueOf("4ade80"), // Bright Emerald Green
-            Input.Keys.UP, Input.Keys.DOWN, Input.Keys.LEFT, Input.Keys.RIGHT,
+            Input.Keys.UP, Input.Keys.LEFT, Input.Keys.RIGHT,
             Input.Keys.ENTER, Input.Keys.K, Input.Keys.L
         );
     }
 
-    public void update(float delta, Array<Mirror> mirrors, Prism prism, float mapWidth, float mapHeight) {
+    public void update(float delta, Array<Mirror> mirrors, Prism prism, Array<Platform> platforms,
+                       float mapWidth, float mapHeight) {
+        delta = MathUtils.clamp(delta, 0f, 0.1f);
         float moveX = 0f;
-        float moveY = 0f;
-
-        if (Gdx.input.isKeyPressed(keyUp)) moveY += 1f;
-        if (Gdx.input.isKeyPressed(keyDown)) moveY -= 1f;
         if (Gdx.input.isKeyPressed(keyLeft)) moveX -= 1f;
         if (Gdx.input.isKeyPressed(keyRight)) moveX += 1f;
 
-        float deltaX = 0f;
-        float deltaY = 0f;
-
-        if (moveX != 0f || moveY != 0f) {
-            float len = (float) Math.sqrt(moveX * moveX + moveY * moveY);
-            deltaX = (moveX / len) * speed * delta;
-            deltaY = (moveY / len) * speed * delta;
-
-            x += deltaX;
-            y += deltaY;
-        }
-
-        // Clamp inside screen
-        x = MathUtils.clamp(x, 4f, mapWidth - size - 4f);
-        y = MathUtils.clamp(y, 4f, mapHeight - size - 4f);
+        float previousX = x;
+        float previousY = y;
+        updateMovement(delta, moveX, Gdx.input.isKeyJustPressed(keyJump), platforms, mapWidth, mapHeight);
+        // Carry objects by the resolved displacement, including falls and collisions.
+        float deltaX = x - previousX;
+        float deltaY = y - previousY;
 
         float cx = getCenterX();
         float cy = getCenterY();
@@ -175,6 +166,65 @@ public class Player {
             }
         }
     }
+
+    /** Input-independent movement so collisions can be checked without a graphics window. */
+    void updateMovement(float delta, float moveX, boolean jumpPressed, Array<Platform> platforms,
+                        float mapWidth, float mapHeight) {
+        float remaining = MathUtils.clamp(delta, 0f, 0.1f);
+        if (remaining == 0f) return;
+
+        grounded = false;
+        for (Platform platform : platforms) {
+            if (x < platform.right() && x + size > platform.x
+                && Math.abs(y - platform.top()) < 0.01f && velocityY <= 0f) {
+                grounded = true;
+                break;
+            }
+        }
+        if (jumpPressed && grounded) {
+            velocityY = JUMP_SPEED;
+            grounded = false;
+        }
+
+        // Small steps keep side/corner collisions stable, even during a slow frame.
+        while (remaining > 0f) {
+            float step = Math.min(remaining, 1f / 120f);
+            remaining -= step;
+            float oldX = x;
+            x = MathUtils.clamp(x + MathUtils.clamp(moveX, -1f, 1f) * speed * step,
+                4f, mapWidth - size - 4f);
+            for (Platform platform : platforms) {
+                if (y >= platform.top() || y + size <= platform.y) continue;
+                if (oldX + size <= platform.x && x + size > platform.x) {
+                    x = platform.x - size;
+                } else if (oldX >= platform.right() && x < platform.right()) {
+                    x = platform.right();
+                }
+            }
+
+            float oldY = y;
+            velocityY = Math.max(velocityY - GRAVITY * step, -MAX_FALL_SPEED);
+            y += velocityY * step;
+            grounded = false;
+            for (Platform platform : platforms) {
+                if (x >= platform.right() || x + size <= platform.x) continue;
+                if (oldY >= platform.top() && y <= platform.top()) {
+                    y = platform.top();
+                    velocityY = 0f;
+                    grounded = true;
+                } else if (oldY + size <= platform.y && y + size >= platform.y) {
+                    y = platform.y - size;
+                    velocityY = 0f;
+                }
+            }
+            if (y > mapHeight - size - 4f) {
+                y = mapHeight - size - 4f;
+                velocityY = Math.min(velocityY, 0f);
+            }
+        }
+    }
+
+    public boolean isGrounded() { return grounded; }
 
     private Mirror getNearestMirror(Array<Mirror> mirrors) {
         Mirror closest = null;
