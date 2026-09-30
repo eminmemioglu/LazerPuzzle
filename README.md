@@ -63,12 +63,13 @@ veya **ESC** ana menüye döndürür. Ayarlar penceresi **Kapat** veya **ESC** i
 ### Oyuncu 1 (Mavi Robot)
 
 PixelLab'den alınan 48×48 karakter paketi ilk oyuncuda kullanılır. Başlangıçta
-öne bakar; A/D ile sola/sağa döner ve durduğunda son baktığı yönü korur.
+öne bakar; A/D ile sola/sağa döner ve yatay hareket tuşu bırakıldığında öne döner.
 Yürüme animasyonu henüz yoktur. Önden ve sağdan görünüşlü GIF zıplama animasyonları
 yükseliş, düşüş ve kısa iniş pozlarıyla fizik hareketine bağlanmıştır. Sağa bakarken
-east animasyonu, sola bakarken onun aynalanmış hâli kullanılır. Başlangıçta öne
-bakarken south animasyonu oynar. Havada yön değiştirmek animasyonu yeniden başlatmaz;
-iniş sonrasında son baktığı yöndeki durağan görsele döner.
+east animasyonu, sola bakarken onun aynalanmış hâli kullanılır. Yatay hareket
+olmadan yerinde zıplarken south animasyonu oynar. Havada yön değiştirmek animasyonu
+yeniden başlatmaz; yatay hareket tuşu bırakılırsa ön animasyona geçer.
+İniş sonrasında hareket etmiyorsa önden duran görsele döner.
 GIF'in kaynak dosyası, PNG kare şeridi ve kare bilgileri kaynaklara dahildir.
 Saydam kenarlar çizim sırasında ayıklanır, ayaklar zemine
 hizalanır ve mevcut 34×34 çarpışma alanı korunur.

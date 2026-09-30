@@ -114,6 +114,7 @@ public class Player {
     private void faceMovement(float input) {
         if (input < 0f) facing = Facing.LEFT;
         else if (input > 0f) facing = Facing.RIGHT;
+        else facing = Facing.FRONT;
     }
 
     public Facing getFacing() { return facing; }
