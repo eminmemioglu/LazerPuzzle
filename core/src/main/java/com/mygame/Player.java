@@ -12,6 +12,9 @@ import com.badlogic.gdx.utils.Array;
  * Handles movement, mirror/prism grabbing, and smooth fine-tuned rotation.
  */
 public class Player {
+    public enum Facing { FRONT, LEFT, RIGHT }
+
+    private Facing facing = Facing.FRONT;
     private final int id;
     private float x;
     private float y;
@@ -79,6 +82,7 @@ public class Player {
 
         float previousX = x;
         float previousY = y;
+        faceMovement(moveX);
         updateMovement(delta, moveX, Gdx.input.isKeyJustPressed(keyJump), platforms, mapWidth, mapHeight);
         // Carry objects by the resolved displacement, including falls and collisions.
         float deltaX = x - previousX;
@@ -93,7 +97,10 @@ public class Player {
         delta = MathUtils.clamp(delta, 0f, 0.1f);
         float firstX = first.x, firstY = first.y;
         float secondX = second.x, secondY = second.y;
-        movePair(delta, first, second, first.horizontalInput(), second.horizontalInput(),
+        float firstInput = first.horizontalInput(), secondInput = second.horizontalInput();
+        first.faceMovement(firstInput);
+        second.faceMovement(secondInput);
+        movePair(delta, first, second, firstInput, secondInput,
             Gdx.input.isKeyJustPressed(first.keyJump), Gdx.input.isKeyJustPressed(second.keyJump),
             platforms, mapWidth, mapHeight);
         first.updateInteractions(delta, first.x - firstX, first.y - firstY, mirrors, prism, mapWidth, mapHeight);
@@ -103,6 +110,13 @@ public class Player {
     private float horizontalInput() {
         return (Gdx.input.isKeyPressed(keyRight) ? 1f : 0f) - (Gdx.input.isKeyPressed(keyLeft) ? 1f : 0f);
     }
+
+    private void faceMovement(float input) {
+        if (input < 0f) facing = Facing.LEFT;
+        else if (input > 0f) facing = Facing.RIGHT;
+    }
+
+    public Facing getFacing() { return facing; }
 
     private void updateInteractions(float delta, float deltaX, float deltaY, Array<Mirror> mirrors,
                                     Prism prism, float mapWidth, float mapHeight) {
@@ -345,7 +359,7 @@ public class Player {
         return closest;
     }
 
-    public void render(ShapeRenderer shapeRenderer) {
+    public void renderTether(ShapeRenderer shapeRenderer) {
         float cx = getCenterX();
         float cy = getCenterY();
 
@@ -359,6 +373,12 @@ public class Player {
             shapeRenderer.line(cx, cy, grabbedPrism.getX(), grabbedPrism.getY());
         }
         shapeRenderer.end();
+    }
+
+    public void render(ShapeRenderer shapeRenderer) {
+        renderTether(shapeRenderer);
+        float cx = getCenterX();
+        float cy = getCenterY();
 
         // Player filled square
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);

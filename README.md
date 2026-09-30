@@ -22,7 +22,7 @@ Java ve libGDX ile geliştirilmiş, 2 oyunculu kooperatif bir lazer yansıtma bu
 | Oyun Motoru | libGDX 1.13.1 |
 | Desktop Backend | LWJGL3 |
 | Build Sistemi | Gradle 8.7 |
-| Grafik | ShapeRenderer (sprite gerektirmez) |
+| Grafik | ShapeRenderer + SpriteBatch (piksel karakter görselleri) |
 
 ## 📋 Gereksinimler
 
@@ -60,7 +60,13 @@ müzik dosyası yoktur; tercih yalnızca uygulama açıkken korunur.
 Oyun sırasında **ESC** ile bölüm seçimine dönülür. Bölüm seçiminde **Geri**
 veya **ESC** ana menüye döndürür. Ayarlar penceresi **Kapat** veya **ESC** ile kapanır.
 
-### Oyuncu 1 (Mavi Kutu)
+### Oyuncu 1 (Mavi Robot)
+
+PixelLab'den alınan 48×48 karakter paketi ilk oyuncuda kullanılır. Başlangıçta
+öne bakar; A/D ile sola/sağa döner ve durduğunda son baktığı yönü korur.
+Paket yalnızca durağan yön görselleri içerir; yürüme ve zıplama animasyonları
+henüz yoktur. Saydam kenarlar çizim sırasında ayıklanır, ayaklar zemine
+hizalanır ve mevcut 34×34 çarpışma alanı korunur.
 
 | Tuş | Eylem |
 |---|---|
@@ -101,6 +107,7 @@ zıplayabilirler. Alttaki oyuncu da üstündeki oyuncuyla birlikte zıplayabilir
 │       ├── MenuSkin.java          # Menülerin ortak geçici görünümü
 │       ├── GameScreen.java        # Ana oyun ekranı
 │       ├── Player.java            # Oyuncu kontrolü & etkileşim
+│       ├── PlayerSprite.java      # PixelLab robotunun yön görselleri
 │       ├── Platform.java          # Katı zemin ve basamak sınırları
 │       ├── Mirror.java            # Hareketli & döndürülebilir ayna
 │       ├── Prism.java             # Üçgen optik prizma

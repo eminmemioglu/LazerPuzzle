@@ -43,6 +43,7 @@ public class GameScreen extends ScreenAdapter {
     private final LevelDefinition level;
     private final SpriteBatch hudBatch;
     private final BitmapFont hudFont;
+    private final PlayerSprite blueRobotSprite;
 
     public GameScreen(MainGame game, LevelDefinition level) {
         this.game = game;
@@ -57,6 +58,7 @@ public class GameScreen extends ScreenAdapter {
         shapeRenderer = new ShapeRenderer();
         hudBatch = new SpriteBatch();
         hudFont = new BitmapFont();
+        blueRobotSprite = new PlayerSprite();
 
         // 1. Two players
         platforms = level.createPlatforms();
@@ -129,8 +131,12 @@ public class GameScreen extends ScreenAdapter {
         }
 
         // 9. Render players
-        p1.render(shapeRenderer);
+        p1.renderTether(shapeRenderer);
         p2.render(shapeRenderer);
+        hudBatch.setProjectionMatrix(camera.combined);
+        hudBatch.begin();
+        blueRobotSprite.draw(hudBatch, p1);
+        hudBatch.end();
 
         // 10. Render top control bar & status indicators
         renderHUD();
@@ -243,5 +249,6 @@ public class GameScreen extends ScreenAdapter {
         shapeRenderer.dispose();
         hudBatch.dispose();
         hudFont.dispose();
+        blueRobotSprite.dispose();
     }
 }

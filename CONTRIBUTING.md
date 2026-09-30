@@ -87,5 +87,5 @@ PR açmadan önce kontrol edin:
 
 - **`core/`**: Platform bağımsız oyun mantığı. Yeni oyun sınıflarını buraya ekleyin.
 - **`lwjgl3/`**: Desktop launcher. Genellikle dokunmanıza gerek kalmaz.
-- **`assets/`**: Gelecekte eklenecek ses/görüntü dosyaları için.
-- Tüm oyun grafikleri `ShapeRenderer` ile çizilir, sprite gerekmez.
+- **`core/src/main/resources/`**: Paketlenen ses/görüntü dosyaları. Robot görselleri `characters/blue-robot/` içindedir.
+- Bölüm geometrisi `ShapeRenderer`, robot görselleri `SpriteBatch` ile çizilir. Görselleri classpath kaynağı olarak yükleyin; Downloads gibi makineye özgü yollar kullanmayın.

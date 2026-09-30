@@ -1,0 +1,36 @@
+{
+  "group_id": "52b63703-8704-4e42-a33c-8aeb7f52b0ea",
+  "states": [
+    {
+      "character": {
+        "id": "754d9d25-a27b-4d83-be9e-89287d993b97",
+        "name": "Idle",
+        "prompt": "A small friendly humanoid laboratory robot for a cooperative 2D pixel-art puzzle platformer. Compact, stocky proportions, a large rounded-square head with a broad flat top, a short torso, two clearly separated arms, short sturdy legs and chunky flat-soled boots. Sky-blue armor, pale ivory face panel, dark navy joints, and one wide horizontal amber visor. Empty mitten-shaped hands, ready to push objects and carry a prism. Simple readable silhouette, large clean color blocks, limited palette, minimal shading and crisp pixel edges. Eye-level orthographic camera suitable for a side-scrolling game. Neutral standing pose, feet flat, full body visible and centered with a small transparent margin. No antenna, weapons, cape, backpack, text, scenery or glow effects.",
+        "size": {
+          "width": 48,
+          "height": 48
+        },
+        "template_id": "mannequin",
+        "directions": 8,
+        "view": "side",
+        "created_at": "2026-09-30T17:17:48.173335+00:00"
+      },
+      "folder": "Idle",
+      "frames": {
+        "rotations": {
+          "south": "Idle/rotations/south.png",
+          "south-east": "Idle/rotations/south-east.png",
+          "east": "Idle/rotations/east.png",
+          "north-east": "Idle/rotations/north-east.png",
+          "north": "Idle/rotations/north.png",
+          "north-west": "Idle/rotations/north-west.png",
+          "west": "Idle/rotations/west.png",
+          "south-west": "Idle/rotations/south-west.png"
+        },
+        "animations": {}
+      }
+    }
+  ],
+  "export_version": "3.1",
+  "export_date": "2026-09-30T17:23:22.874404"
+}
