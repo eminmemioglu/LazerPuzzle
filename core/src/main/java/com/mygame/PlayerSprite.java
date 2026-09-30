@@ -6,17 +6,35 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.Disposable;
+import com.badlogic.gdx.utils.JsonReader;
+import com.badlogic.gdx.utils.JsonValue;
 
-/** PixelLab's static directional poses, aligned to the player's feet and collision height. */
+/** Directional idle poses and a front-facing jump, aligned to the player's feet. */
 public final class PlayerSprite implements Disposable {
     private final TextureRegion front;
     private final TextureRegion left;
     private final TextureRegion right;
+    private final Texture jumpTexture;
+    private final TextureRegion[] jumpFrames;
+    private final JumpAnimation jumpAnimation = new JumpAnimation();
 
     public PlayerSprite() {
         front = load("south");
         left = load("west");
         right = load("east");
+        jumpTexture = new Texture(Gdx.files.classpath("characters/blue-robot/jump/south.png"));
+        jumpTexture.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
+        JsonValue frames = new JsonReader().parse(Gdx.files.classpath("characters/blue-robot/jump/south.json")).get("frames");
+        jumpFrames = new TextureRegion[frames.size];
+        for (int i = 0; i < frames.size; i++) {
+            JsonValue frame = frames.get(i);
+            jumpFrames[i] = new TextureRegion(jumpTexture, frame.getInt("x"), frame.getInt("y"),
+                frame.getInt("width"), frame.getInt("height"));
+        }
+    }
+
+    public void update(float delta, Player player) {
+        jumpAnimation.update(delta, player.isGrounded(), player.getVerticalVelocity());
     }
 
     private TextureRegion load(String direction) {
@@ -51,10 +69,17 @@ public final class PlayerSprite implements Disposable {
             case RIGHT: pose = right; break;
             default: pose = front;
         }
-        float height = player.getSize();
-        float width = height * pose.getRegionWidth() / pose.getRegionHeight();
+        float scale = player.getSize() / pose.getRegionHeight();
+        int jumpFrame = jumpAnimation.getFrameIndex();
+        if (jumpFrame >= 0) {
+            pose = jumpFrames[jumpFrame];
+            // Constant scale preserves squash/tuck poses; the GIF's baked-in travel is removed.
+            scale = player.getSize() / jumpFrames[0].getRegionHeight();
+        }
+        float height = pose.getRegionHeight() * scale;
+        float width = pose.getRegionWidth() * scale;
         batch.draw(pose, player.getCenterX() - width / 2f,
-            player.getCenterY() - height / 2f, width, height);
+            player.getCenterY() - player.getSize() / 2f, width, height);
     }
 
     @Override
@@ -62,5 +87,6 @@ public final class PlayerSprite implements Disposable {
         front.getTexture().dispose();
         left.getTexture().dispose();
         right.getTexture().dispose();
+        jumpTexture.dispose();
     }
 }

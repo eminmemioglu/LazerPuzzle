@@ -64,8 +64,11 @@ veya **ESC** ana menüye döndürür. Ayarlar penceresi **Kapat** veya **ESC** i
 
 PixelLab'den alınan 48×48 karakter paketi ilk oyuncuda kullanılır. Başlangıçta
 öne bakar; A/D ile sola/sağa döner ve durduğunda son baktığı yönü korur.
-Paket yalnızca durağan yön görselleri içerir; yürüme ve zıplama animasyonları
-henüz yoktur. Saydam kenarlar çizim sırasında ayıklanır, ayaklar zemine
+Yürüme animasyonu henüz yoktur. Önden görünüşlü GIF zıplama animasyonu
+yükseliş, düşüş ve kısa iniş pozlarıyla fizik hareketine bağlanmıştır; sola veya
+sağa zıplarken de şimdilik önden görünür, iniş sonrasında son baktığı yöne döner.
+GIF'in kaynak dosyası, PNG kare şeridi ve kare bilgileri kaynaklara dahildir.
+Saydam kenarlar çizim sırasında ayıklanır, ayaklar zemine
 hizalanır ve mevcut 34×34 çarpışma alanı korunur.
 
 | Tuş | Eylem |

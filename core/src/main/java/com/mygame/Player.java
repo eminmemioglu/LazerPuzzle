@@ -342,6 +342,7 @@ public class Player {
     }
 
     public boolean isGrounded() { return grounded; }
+    public float getVerticalVelocity() { return velocityY; }
 
     private Mirror getNearestMirror(Array<Mirror> mirrors) {
         Mirror closest = null;

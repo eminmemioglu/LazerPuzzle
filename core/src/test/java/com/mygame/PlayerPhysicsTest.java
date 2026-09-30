@@ -102,6 +102,7 @@ public final class PlayerPhysicsTest {
         jumpTo(player, level, 670f, 452f);
         checkCarrying(floor);
         PlayerContactTest.main(args);
+        JumpAnimationTest.run();
         System.out.println("Player physics passed: gravity, landing, jump, air-jump prevention, edges, ceiling, sides, slow frames, frame rates.");
     }
 
