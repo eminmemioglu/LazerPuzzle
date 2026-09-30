@@ -9,13 +9,16 @@ import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
 
-/** Directional idle poses and a front-facing jump, aligned to the player's feet. */
+/** Directional idle and jump poses, aligned to the player's feet. */
 public final class PlayerSprite implements Disposable {
     private final TextureRegion front;
     private final TextureRegion left;
     private final TextureRegion right;
     private final Texture jumpTexture;
     private final TextureRegion[] jumpFrames;
+    private final Texture eastJumpTexture;
+    private final TextureRegion[] eastJumpFrames;
+    private final TextureRegion[] westJumpFrames;
     private final JumpAnimation jumpAnimation = new JumpAnimation();
 
     public PlayerSprite() {
@@ -23,14 +26,29 @@ public final class PlayerSprite implements Disposable {
         left = load("west");
         right = load("east");
         jumpTexture = new Texture(Gdx.files.classpath("characters/blue-robot/jump/south.png"));
-        jumpTexture.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
-        JsonValue frames = new JsonReader().parse(Gdx.files.classpath("characters/blue-robot/jump/south.json")).get("frames");
-        jumpFrames = new TextureRegion[frames.size];
+        jumpFrames = loadJump(jumpTexture, "south");
+        eastJumpTexture = new Texture(Gdx.files.classpath("characters/blue-robot/jump/east.png"));
+        eastJumpFrames = loadJump(eastJumpTexture, "east");
+        westJumpFrames = new TextureRegion[eastJumpFrames.length];
+        for (int i = 0; i < eastJumpFrames.length; i++) {
+            // Copy the region so mirroring left never changes the right-facing frames.
+            westJumpFrames[i] = new TextureRegion(eastJumpFrames[i]);
+            westJumpFrames[i].flip(true, false);
+        }
+    }
+
+    private TextureRegion[] loadJump(Texture texture, String direction) {
+        texture.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
+        JsonValue frames = new JsonReader().parse(Gdx.files.classpath(
+            "characters/blue-robot/jump/" + direction + ".json")).get("frames");
+        if (frames.size != 9) throw new IllegalArgumentException("Jump requires nine frames: " + direction);
+        TextureRegion[] regions = new TextureRegion[frames.size];
         for (int i = 0; i < frames.size; i++) {
             JsonValue frame = frames.get(i);
-            jumpFrames[i] = new TextureRegion(jumpTexture, frame.getInt("x"), frame.getInt("y"),
+            regions[i] = new TextureRegion(texture, frame.getInt("x"), frame.getInt("y"),
                 frame.getInt("width"), frame.getInt("height"));
         }
+        return regions;
     }
 
     public void update(float delta, Player player) {
@@ -72,9 +90,15 @@ public final class PlayerSprite implements Disposable {
         float scale = player.getSize() / pose.getRegionHeight();
         int jumpFrame = jumpAnimation.getFrameIndex();
         if (jumpFrame >= 0) {
-            pose = jumpFrames[jumpFrame];
+            TextureRegion[] directionalFrames;
+            switch (player.getFacing()) {
+                case LEFT: directionalFrames = westJumpFrames; break;
+                case RIGHT: directionalFrames = eastJumpFrames; break;
+                default: directionalFrames = jumpFrames;
+            }
+            pose = directionalFrames[jumpFrame];
             // Constant scale preserves squash/tuck poses; the GIF's baked-in travel is removed.
-            scale = player.getSize() / jumpFrames[0].getRegionHeight();
+            scale = player.getSize() / directionalFrames[0].getRegionHeight();
         }
         float height = pose.getRegionHeight() * scale;
         float width = pose.getRegionWidth() * scale;
@@ -88,5 +112,6 @@ public final class PlayerSprite implements Disposable {
         left.getTexture().dispose();
         right.getTexture().dispose();
         jumpTexture.dispose();
+        eastJumpTexture.dispose();
     }
 }
