@@ -9,7 +9,7 @@ import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
 
-/** Directional idle and jump poses, aligned to the player's feet. */
+/** Idle, running and jump poses, aligned to the player's feet. */
 public final class PlayerSprite implements Disposable {
     private final TextureRegion front;
     private final TextureRegion left;
@@ -26,6 +26,13 @@ public final class PlayerSprite implements Disposable {
     private final float idleDuration;
     private float idleTime;
     private int idleFrame = -1;
+    private final Texture runTexture;
+    private final TextureRegion[] eastRunFrames;
+    private final TextureRegion[] westRunFrames;
+    private static final float RUN_FRAME_SECONDS = 0.08f;
+    private float runTime;
+    private int runFrame = -1;
+    private float previousX = Float.NaN;
 
     public PlayerSprite() {
         front = load("south");
@@ -52,6 +59,13 @@ public final class PlayerSprite implements Disposable {
             idleFrameEnds[i] = duration;
         }
         idleDuration = duration;
+        runTexture = new Texture(Gdx.files.classpath("characters/blue-robot/running/east.png"));
+        eastRunFrames = loadFrames(runTexture, "running/east", 8);
+        westRunFrames = new TextureRegion[eastRunFrames.length];
+        for (int i = 0; i < eastRunFrames.length; i++) {
+            westRunFrames[i] = new TextureRegion(eastRunFrames[i]);
+            westRunFrames[i].flip(true, false);
+        }
     }
 
     private TextureRegion[] loadFrames(Texture texture, String path, int expectedCount) {
@@ -70,6 +84,17 @@ public final class PlayerSprite implements Disposable {
 
     public void update(float delta, Player player) {
         jumpAnimation.update(delta, player.isGrounded(), player.getVerticalVelocity());
+        boolean moving = !Float.isNaN(previousX) && Math.abs(player.getCenterX() - previousX) > 0.001f;
+        previousX = player.getCenterX();
+        if (player.isGrounded() && player.getFacing() != Player.Facing.FRONT
+            && moving && jumpAnimation.getFrameIndex() < 0) {
+            runTime = runFrame < 0 ? 0f : (runTime + Math.max(0f, Math.min(delta, 0.1f)))
+                % (RUN_FRAME_SECONDS * eastRunFrames.length);
+            runFrame = (int) (runTime / RUN_FRAME_SECONDS);
+        } else {
+            runTime = 0f;
+            runFrame = -1;
+        }
         if (player.isGrounded() && player.getFacing() == Player.Facing.FRONT
             && jumpAnimation.getFrameIndex() < 0) {
             idleTime = idleFrame < 0 ? 0f : (idleTime + Math.max(0f, Math.min(delta, 0.1f))) % idleDuration;
@@ -125,6 +150,10 @@ public final class PlayerSprite implements Disposable {
             pose = directionalFrames[jumpFrame];
             // Constant scale preserves squash/tuck poses; the GIF's baked-in travel is removed.
             scale = player.getSize() / directionalFrames[0].getRegionHeight();
+        } else if (runFrame >= 0) {
+            TextureRegion[] directionalFrames = player.getFacing() == Player.Facing.LEFT ? westRunFrames : eastRunFrames;
+            pose = directionalFrames[runFrame];
+            scale = player.getSize() / directionalFrames[0].getRegionHeight();
         } else if (idleFrame >= 0) {
             pose = idleFrames[idleFrame];
             // Keep one scale across the loop so breathing does not resize the character.
@@ -144,5 +173,6 @@ public final class PlayerSprite implements Disposable {
         jumpTexture.dispose();
         eastJumpTexture.dispose();
         idleTexture.dispose();
+        runTexture.dispose();
     }
 }

@@ -67,7 +67,9 @@ PixelLab'den alınan 48×48 karakter paketi ilk oyuncuda kullanılır. Başlang�
 Yerde dururken önden nefes alma animasyonu oynar: dört kare, kare başına
 200 ms, sürekli döngü. Hareket veya zıplama başladığında bekleme animasyonu
 kesilir; iniş animasyonu tamamlanınca ve karakter durunca yeniden başlar.
-Yürüme animasyonu henüz yoktur. Önden ve sağdan görünüşlü GIF zıplama animasyonları
+Yerde sağa hareket ederken sekiz karelik koşma animasyonu, sola giderken onun
+aynalanmış hâli oynar. Koşma döngüsü oyun hızına uygun olarak 80 ms/kare kullanır.
+Duvar önünde ilerleyemiyorsa koşma döngüsü durur. Önden ve sağdan görünüşlü GIF zıplama animasyonları
 yükseliş, düşüş ve kısa iniş pozlarıyla fizik hareketine bağlanmıştır. Sağa bakarken
 east animasyonu, sola bakarken onun aynalanmış hâli kullanılır. Yatay hareket
 olmadan yerinde zıplarken south animasyonu oynar. Havada yön değiştirmek animasyonu
