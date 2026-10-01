@@ -20,28 +20,45 @@ public final class PlayerSprite implements Disposable {
     private final TextureRegion[] eastJumpFrames;
     private final TextureRegion[] westJumpFrames;
     private final JumpAnimation jumpAnimation = new JumpAnimation();
+    private final Texture idleTexture;
+    private final TextureRegion[] idleFrames;
+    private final float[] idleFrameEnds;
+    private final float idleDuration;
+    private float idleTime;
+    private int idleFrame = -1;
 
     public PlayerSprite() {
         front = load("south");
         left = load("west");
         right = load("east");
         jumpTexture = new Texture(Gdx.files.classpath("characters/blue-robot/jump/south.png"));
-        jumpFrames = loadJump(jumpTexture, "south");
+        jumpFrames = loadFrames(jumpTexture, "jump/south", 9);
         eastJumpTexture = new Texture(Gdx.files.classpath("characters/blue-robot/jump/east.png"));
-        eastJumpFrames = loadJump(eastJumpTexture, "east");
+        eastJumpFrames = loadFrames(eastJumpTexture, "jump/east", 9);
         westJumpFrames = new TextureRegion[eastJumpFrames.length];
         for (int i = 0; i < eastJumpFrames.length; i++) {
             // Copy the region so mirroring left never changes the right-facing frames.
             westJumpFrames[i] = new TextureRegion(eastJumpFrames[i]);
             westJumpFrames[i].flip(true, false);
         }
+        idleTexture = new Texture(Gdx.files.classpath("characters/blue-robot/breathing/south.png"));
+        idleFrames = loadFrames(idleTexture, "breathing/south", 4);
+        JsonValue timings = new JsonReader().parse(Gdx.files.classpath(
+            "characters/blue-robot/breathing/south.json")).get("frames");
+        idleFrameEnds = new float[timings.size];
+        float duration = 0f;
+        for (int i = 0; i < timings.size; i++) {
+            duration += timings.get(i).getInt("durationMs") / 1000f;
+            idleFrameEnds[i] = duration;
+        }
+        idleDuration = duration;
     }
 
-    private TextureRegion[] loadJump(Texture texture, String direction) {
+    private TextureRegion[] loadFrames(Texture texture, String path, int expectedCount) {
         texture.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
         JsonValue frames = new JsonReader().parse(Gdx.files.classpath(
-            "characters/blue-robot/jump/" + direction + ".json")).get("frames");
-        if (frames.size != 9) throw new IllegalArgumentException("Jump requires nine frames: " + direction);
+            "characters/blue-robot/" + path + ".json")).get("frames");
+        if (frames.size != expectedCount) throw new IllegalArgumentException("Unexpected frame count: " + path);
         TextureRegion[] regions = new TextureRegion[frames.size];
         for (int i = 0; i < frames.size; i++) {
             JsonValue frame = frames.get(i);
@@ -53,6 +70,15 @@ public final class PlayerSprite implements Disposable {
 
     public void update(float delta, Player player) {
         jumpAnimation.update(delta, player.isGrounded(), player.getVerticalVelocity());
+        if (player.isGrounded() && player.getFacing() == Player.Facing.FRONT
+            && jumpAnimation.getFrameIndex() < 0) {
+            idleTime = idleFrame < 0 ? 0f : (idleTime + Math.max(0f, Math.min(delta, 0.1f))) % idleDuration;
+            idleFrame = 0;
+            while (idleFrame < idleFrames.length - 1 && idleTime >= idleFrameEnds[idleFrame]) idleFrame++;
+        } else {
+            idleTime = 0f;
+            idleFrame = -1;
+        }
     }
 
     private TextureRegion load(String direction) {
@@ -99,6 +125,10 @@ public final class PlayerSprite implements Disposable {
             pose = directionalFrames[jumpFrame];
             // Constant scale preserves squash/tuck poses; the GIF's baked-in travel is removed.
             scale = player.getSize() / directionalFrames[0].getRegionHeight();
+        } else if (idleFrame >= 0) {
+            pose = idleFrames[idleFrame];
+            // Keep one scale across the loop so breathing does not resize the character.
+            scale = player.getSize() / idleFrames[0].getRegionHeight();
         }
         float height = pose.getRegionHeight() * scale;
         float width = pose.getRegionWidth() * scale;
@@ -113,5 +143,6 @@ public final class PlayerSprite implements Disposable {
         right.getTexture().dispose();
         jumpTexture.dispose();
         eastJumpTexture.dispose();
+        idleTexture.dispose();
     }
 }
