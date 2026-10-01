@@ -1,0 +1,61 @@
+{
+  "source": "Idle_running-8-frames_east.gif",
+  "frames": [
+    {
+      "x": 10,
+      "y": 4,
+      "width": 26,
+      "height": 36,
+      "durationMs": 200
+    },
+    {
+      "x": 57,
+      "y": 4,
+      "width": 26,
+      "height": 36,
+      "durationMs": 200
+    },
+    {
+      "x": 106,
+      "y": 3,
+      "width": 26,
+      "height": 37,
+      "durationMs": 200
+    },
+    {
+      "x": 154,
+      "y": 4,
+      "width": 26,
+      "height": 36,
+      "durationMs": 200
+    },
+    {
+      "x": 201,
+      "y": 3,
+      "width": 26,
+      "height": 37,
+      "durationMs": 200
+    },
+    {
+      "x": 250,
+      "y": 3,
+      "width": 27,
+      "height": 37,
+      "durationMs": 200
+    },
+    {
+      "x": 297,
+      "y": 4,
+      "width": 26,
+      "height": 36,
+      "durationMs": 200
+    },
+    {
+      "x": 345,
+      "y": 3,
+      "width": 26,
+      "height": 37,
+      "durationMs": 200
+    }
+  ]
+}
