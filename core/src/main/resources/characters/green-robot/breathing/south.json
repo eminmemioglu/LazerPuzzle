@@ -1,0 +1,33 @@
+{
+  "source": "Idle_breathing-idle_south (1).gif",
+  "frames": [
+    {
+      "x": 16,
+      "y": 10,
+      "width": 36,
+      "height": 44,
+      "durationMs": 200
+    },
+    {
+      "x": 83,
+      "y": 10,
+      "width": 38,
+      "height": 44,
+      "durationMs": 200
+    },
+    {
+      "x": 152,
+      "y": 10,
+      "width": 36,
+      "height": 44,
+      "durationMs": 200
+    },
+    {
+      "x": 219,
+      "y": 10,
+      "width": 38,
+      "height": 44,
+      "durationMs": 200
+    }
+  ]
+}

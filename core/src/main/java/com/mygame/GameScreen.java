@@ -44,6 +44,7 @@ public class GameScreen extends ScreenAdapter {
     private final SpriteBatch hudBatch;
     private final BitmapFont hudFont;
     private final PlayerSprite blueRobotSprite;
+    private final PlayerSprite greenRobotSprite;
 
     public GameScreen(MainGame game, LevelDefinition level) {
         this.game = game;
@@ -59,6 +60,7 @@ public class GameScreen extends ScreenAdapter {
         hudBatch = new SpriteBatch();
         hudFont = new BitmapFont();
         blueRobotSprite = new PlayerSprite();
+        greenRobotSprite = new PlayerSprite("green-robot", 5, 7);
 
         // 1. Two players
         platforms = level.createPlatforms();
@@ -103,6 +105,7 @@ public class GameScreen extends ScreenAdapter {
         // 2. Update player inputs & mirror/prism grabbing and rotation
         Player.updatePair(delta, p1, p2, mirrors, prism, platforms, WORLD_WIDTH, WORLD_HEIGHT);
         blueRobotSprite.update(delta, p1);
+        greenRobotSprite.update(delta, p2);
 
         // 3. Update optical ray tracing with prism dispersion & mirror reflections
         laserSystem.update(mirrors, prism, p1, p2, targets);
@@ -133,10 +136,11 @@ public class GameScreen extends ScreenAdapter {
 
         // 9. Render players
         p1.renderTether(shapeRenderer);
-        p2.render(shapeRenderer);
+        p2.renderTether(shapeRenderer);
         hudBatch.setProjectionMatrix(camera.combined);
         hudBatch.begin();
         blueRobotSprite.draw(hudBatch, p1);
+        greenRobotSprite.draw(hudBatch, p2);
         hudBatch.end();
 
         // 10. Render top control bar & status indicators
@@ -251,5 +255,6 @@ public class GameScreen extends ScreenAdapter {
         hudBatch.dispose();
         hudFont.dispose();
         blueRobotSprite.dispose();
+        greenRobotSprite.dispose();
     }
 }

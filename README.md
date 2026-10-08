@@ -1,4 +1,4 @@
-# 🎮 Lazer Puzzle — 2 Oyunculu Kooperatif Bulmaca Oyunu
+# 🎮 Lichtstrahlen — 2 Oyunculu Kooperatif Bulmaca Oyunu
 
 Java ve libGDX ile geliştirilmiş, 2 oyunculu kooperatif bir lazer yansıtma bulmaca oyunu.
 
@@ -51,11 +51,19 @@ cd LazerPuzzle
 
 Oyun açıldığında ana menü görünür. **Oyna** bölüm seçme ekranını açar.
 **1, 2, 3, 4** düğmelerinden biri seçildiğinde ilgili bölüm baştan başlar.
+Bölüm seçimi ana menüyle aynı piksel laboratuvar temasını kullanır. Dört büyük
+kartta bölüm numarası ve gerçek başlangıç yerleşiminden platform, ayna, prizma
+ve hedef önizlemesi bulunur; kartın herhangi bir yerine tıklamak bölümü açar.
+**Geri** veya **ESC** ana menüye döndürür. Dört bölüm de doğrudan seçilebilir.
 İlk bölüm platformlar üzerinden ulaşılan mevcut bulmacadır; diğer üç bölüm farklı geçici prizma, ayna ve
 hedef yerleşimleri kullanır. Bölüm tasarımları ve zorluk dengesi daha sonra hazırlanacaktır.
-Sağ üstteki **Müzik** düğmesi açık/kapalı tercihini değiştirir; **Ayarlar**
-düğmesi aynı tercihin bulunduğu bir pencere açar. Bu ilk taslakta henüz
-müzik dosyası yoktur; tercih yalnızca uygulama açıkken korunur.
+Ana menü, PixelLab laboratuvar arka planı, piksel yazı tipi ve iki animasyonlu robotla
+**Lichtstrahlen** adını gösterir. Sağ üstteki **nota ikonu** menü müziğini açar/kapatır;
+kapalı durumda ikonun üzerinde çizgi görünür. Yanındaki **dişli ikonu** aynı tercihin
+bulunduğu ayarlar penceresini açar. Tercih uygulama yeniden açıldığında da korunur.
+Özgün 24 saniyelik müzik ana menüde ve bölüm seçiminde döngü halinde çalar;
+bölüme girildiğinde duraklar. Görseller `ui/lichtstrahlen/`, müzik `audio/` kaynaklarındadır.
+`scripts/create_menu_support.py` piksel yazı tipini ve sentezlenmiş müziği yeniden üretir.
 
 Oyun sırasında **ESC** ile bölüm seçimine dönülür. Bölüm seçiminde **Geri**
 veya **ESC** ana menüye döndürür. Ayarlar penceresi **Kapat** veya **ESC** ile kapanır.
@@ -86,7 +94,17 @@ hizalanır ve mevcut 34×34 çarpışma alanı korunur.
 | `SPACE` (Boşluk) | Yakındaki aynayı/prizmayı tut ve taşı |
 | `Q` / `E` | Döndür (tek basış: 3.5° minik adım, basılı tutma: akıcı dönüş) |
 
-### Oyuncu 2 (Yeşil Kutu)
+### Oyuncu 2 (Yeşil Robot)
+
+İkinci oyuncu da PixelLab robot görsellerini kullanır. Dururken önden dört karelik
+nefes alma, sağa/sola giderken sekiz karelik koşma animasyonu oynar. Yedi karelik
+zıplama animasyonu önden ve sağ profilden yüklenir; sol profil aynalanır.
+Zıplamada yükseliş kareleri 0–4, düşüş karesi 5, yere temas sonrası iniş karesi 6'dır.
+İki robotun animasyon süreleri birbirinden bağımsızdır; fizik ve kontroller aynıdır.
+Kaynak GIF'ler, PNG kare şeritleri ve kare bilgileri
+`core/src/main/resources/characters/green-robot/` altında bulunur.
+Sabit ön poz nefes alma GIF'inin, sağ poz zıplama GIF'inin ilk karesinden alınmıştır;
+sol poz sağ pozun aynasıdır. Saydamlık ve 34×34 çarpışma alanı korunur.
 
 | Tuş | Eylem |
 |---|---|

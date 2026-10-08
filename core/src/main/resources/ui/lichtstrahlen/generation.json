@@ -1,0 +1,53 @@
+{
+  "provider": "PixelLab MCP",
+  "model": "pixen",
+  "assets": [
+    {
+      "key": "background",
+      "description": "Pixel art title-screen background for Lichtstrahlen, a friendly cooperative robot laser puzzle game. Wide 16:9 side-view underground laboratory, deep midnight navy and teal metal architecture, symmetrical industrial wall panels and pipes at the edges, a low floor platform along the bottom. Left equipment emits a thin cyan light beam, right equipment emits a thin leaf-green beam, subtle warm amber lights. Beautiful clean pixel clusters, limited palette, crisp pixel edges, restrained lighting, atmospheric and inviting. Leave the middle upper half very dark, uncluttered and empty for a large game title; leave lower center empty for a play button. No robots, no characters, no text, no letters, no logo, no user-interface, no buttons.",
+      "width": 640,
+      "height": 360,
+      "no_background": false,
+      "detail": "medium detail",
+      "view": "side",
+      "outline": "lineless",
+      "jobId": "d09339e6-7ffb-4b4f-81c0-0b454ed66d70",
+      "costGenerations": 1
+    },
+    {
+      "key": "music",
+      "description": "Single pixel-art musical eighth-note icon for a robot laboratory game's music toggle. Large readable ivory note with small cyan-blue highlights, chunky crisp pixel edges, dark navy outline, symmetrical balanced square composition. Only one musical note, centered, fills most of the canvas with a 4 pixel transparent margin. No frame, no button, no text, no background, no scenery, no glow.",
+      "width": 32,
+      "height": 32,
+      "no_background": true,
+      "detail": "low detail",
+      "outline": "single color outline",
+      "jobId": "1fbcf1f8-7054-4b6c-b3cd-6d8ebb1474b1",
+      "costGenerations": 1
+    },
+    {
+      "key": "settings",
+      "description": "Single pixel-art settings gear icon for a friendly robot laboratory game. One ivory metal cog with eight chunky teeth, a dark navy circular hole and subtle cyan-blue edge highlights. Crisp clean pixels, simple recognizable silhouette, centered square composition, fills most of the canvas with a 4 pixel transparent margin. No frame, no button, no letters, no text, no background, no glow.",
+      "width": 32,
+      "height": 32,
+      "no_background": true,
+      "detail": "low detail",
+      "outline": "single color outline",
+      "jobId": "9f344cd7-f259-4386-9ed4-2049cbc6a71f",
+      "costGenerations": 1
+    },
+    {
+      "key": "play-button",
+      "description": "One blank pixel-art horizontal game menu button, front view, centered. Dark midnight navy metal plate, thick cyan-blue pixel border, ivory small corner accents, leaf-green inset accent on the lower edge, stepped beveled corners, subtle deep shadow. Very wide horizontal rectangle nearly filling a 160x48 canvas. Middle is flat empty dark teal, suitable for white text added separately. Friendly robot laboratory puzzle game style, crisp clean large pixel clusters. No text, no letters, no symbols, no other objects. Transparent background around the single button.",
+      "width": 160,
+      "height": 48,
+      "no_background": true,
+      "detail": "low detail",
+      "view": "side",
+      "outline": "single color outline",
+      "jobId": "11f9e5a9-afac-4b1e-81ce-03528680237e",
+      "costGenerations": 1
+    }
+  ],
+  "support": "Original pixel font and synthesized music: scripts/create_menu_support.py"
+}

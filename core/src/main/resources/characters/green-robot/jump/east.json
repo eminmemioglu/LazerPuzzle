@@ -1,0 +1,54 @@
+{
+  "source": "Idle_two-footed-jump_east.gif",
+  "frames": [
+    {
+      "x": 15,
+      "y": 3,
+      "width": 17,
+      "height": 44,
+      "durationMs": 200
+    },
+    {
+      "x": 60,
+      "y": 6,
+      "width": 25,
+      "height": 41,
+      "durationMs": 200
+    },
+    {
+      "x": 112,
+      "y": 9,
+      "width": 22,
+      "height": 38,
+      "durationMs": 200
+    },
+    {
+      "x": 160,
+      "y": 2,
+      "width": 16,
+      "height": 44,
+      "durationMs": 200
+    },
+    {
+      "x": 208,
+      "y": 0,
+      "width": 16,
+      "height": 43,
+      "durationMs": 200
+    },
+    {
+      "x": 256,
+      "y": 1,
+      "width": 17,
+      "height": 44,
+      "durationMs": 200
+    },
+    {
+      "x": 307,
+      "y": 6,
+      "width": 15,
+      "height": 41,
+      "durationMs": 200
+    }
+  ]
+}
