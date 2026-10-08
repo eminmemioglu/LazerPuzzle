@@ -1,5 +1,6 @@
 package com.mygame;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
@@ -22,8 +23,8 @@ final class MenuSkin {
         pixel.dispose();
         result.add("white", texture);
 
-        BitmapFont font = new BitmapFont();
-        font.getRegion().getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        BitmapFont font = new BitmapFont(Gdx.files.classpath("ui/lichtstrahlen/pixel-font.fnt"));
+        font.getRegion().getTexture().setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
         result.add("default-font", font);
         result.add("default", new Label.LabelStyle(font, Color.WHITE));
 

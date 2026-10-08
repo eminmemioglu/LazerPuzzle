@@ -19,7 +19,8 @@ public final class PlayerSprite implements Disposable {
     private final Texture eastJumpTexture;
     private final TextureRegion[] eastJumpFrames;
     private final TextureRegion[] westJumpFrames;
-    private final JumpAnimation jumpAnimation = new JumpAnimation();
+    private final JumpAnimation jumpAnimation;
+    private final String resourceRoot;
     private final Texture idleTexture;
     private final TextureRegion[] idleFrames;
     private final float[] idleFrameEnds;
@@ -35,23 +36,29 @@ public final class PlayerSprite implements Disposable {
     private float previousX = Float.NaN;
 
     public PlayerSprite() {
+        this("blue-robot", 6, 9);
+    }
+
+    public PlayerSprite(String characterName, int fallFrame, int jumpFrameCount) {
+        resourceRoot = "characters/" + characterName + "/";
+        jumpAnimation = new JumpAnimation(fallFrame, jumpFrameCount);
         front = load("south");
         left = load("west");
         right = load("east");
-        jumpTexture = new Texture(Gdx.files.classpath("characters/blue-robot/jump/south.png"));
-        jumpFrames = loadFrames(jumpTexture, "jump/south", 9);
-        eastJumpTexture = new Texture(Gdx.files.classpath("characters/blue-robot/jump/east.png"));
-        eastJumpFrames = loadFrames(eastJumpTexture, "jump/east", 9);
+        jumpTexture = new Texture(Gdx.files.classpath(resourceRoot + "jump/south.png"));
+        jumpFrames = loadFrames(jumpTexture, "jump/south", jumpFrameCount);
+        eastJumpTexture = new Texture(Gdx.files.classpath(resourceRoot + "jump/east.png"));
+        eastJumpFrames = loadFrames(eastJumpTexture, "jump/east", jumpFrameCount);
         westJumpFrames = new TextureRegion[eastJumpFrames.length];
         for (int i = 0; i < eastJumpFrames.length; i++) {
             // Copy the region so mirroring left never changes the right-facing frames.
             westJumpFrames[i] = new TextureRegion(eastJumpFrames[i]);
             westJumpFrames[i].flip(true, false);
         }
-        idleTexture = new Texture(Gdx.files.classpath("characters/blue-robot/breathing/south.png"));
+        idleTexture = new Texture(Gdx.files.classpath(resourceRoot + "breathing/south.png"));
         idleFrames = loadFrames(idleTexture, "breathing/south", 4);
         JsonValue timings = new JsonReader().parse(Gdx.files.classpath(
-            "characters/blue-robot/breathing/south.json")).get("frames");
+            resourceRoot + "breathing/south.json")).get("frames");
         idleFrameEnds = new float[timings.size];
         float duration = 0f;
         for (int i = 0; i < timings.size; i++) {
@@ -59,7 +66,7 @@ public final class PlayerSprite implements Disposable {
             idleFrameEnds[i] = duration;
         }
         idleDuration = duration;
-        runTexture = new Texture(Gdx.files.classpath("characters/blue-robot/running/east.png"));
+        runTexture = new Texture(Gdx.files.classpath(resourceRoot + "running/east.png"));
         eastRunFrames = loadFrames(runTexture, "running/east", 8);
         westRunFrames = new TextureRegion[eastRunFrames.length];
         for (int i = 0; i < eastRunFrames.length; i++) {
@@ -71,7 +78,7 @@ public final class PlayerSprite implements Disposable {
     private TextureRegion[] loadFrames(Texture texture, String path, int expectedCount) {
         texture.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
         JsonValue frames = new JsonReader().parse(Gdx.files.classpath(
-            "characters/blue-robot/" + path + ".json")).get("frames");
+            resourceRoot + path + ".json")).get("frames");
         if (frames.size != expectedCount) throw new IllegalArgumentException("Unexpected frame count: " + path);
         TextureRegion[] regions = new TextureRegion[frames.size];
         for (int i = 0; i < frames.size; i++) {
@@ -109,7 +116,7 @@ public final class PlayerSprite implements Disposable {
     private TextureRegion load(String direction) {
         // Classpath resources also work when running the packaged distribution elsewhere.
         Pixmap pixels = new Pixmap(Gdx.files.classpath(
-            "characters/blue-robot/Idle/rotations/" + direction + ".png"));
+            resourceRoot + "Idle/rotations/" + direction + ".png"));
         try {
             int minX = pixels.getWidth(), minY = pixels.getHeight(), maxX = -1, maxY = -1;
             for (int y = 0; y < pixels.getHeight(); y++) {

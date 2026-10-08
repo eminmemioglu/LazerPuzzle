@@ -1,0 +1,54 @@
+{
+  "source": "Idle_two-footed-jump_south.gif",
+  "frames": [
+    {
+      "x": 14,
+      "y": 12,
+      "width": 40,
+      "height": 45,
+      "durationMs": 200
+    },
+    {
+      "x": 78,
+      "y": 14,
+      "width": 48,
+      "height": 43,
+      "durationMs": 200
+    },
+    {
+      "x": 149,
+      "y": 17,
+      "width": 43,
+      "height": 40,
+      "durationMs": 200
+    },
+    {
+      "x": 217,
+      "y": 11,
+      "width": 43,
+      "height": 45,
+      "durationMs": 200
+    },
+    {
+      "x": 284,
+      "y": 10,
+      "width": 45,
+      "height": 44,
+      "durationMs": 200
+    },
+    {
+      "x": 351,
+      "y": 10,
+      "width": 46,
+      "height": 45,
+      "durationMs": 200
+    },
+    {
+      "x": 421,
+      "y": 15,
+      "width": 43,
+      "height": 42,
+      "durationMs": 200
+    }
+  ]
+}

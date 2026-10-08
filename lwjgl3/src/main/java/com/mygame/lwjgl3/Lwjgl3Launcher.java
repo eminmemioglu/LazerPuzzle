@@ -10,7 +10,7 @@ import com.mygame.MainGame;
 public class Lwjgl3Launcher {
     public static void main(String[] args) {
         Lwjgl3ApplicationConfiguration configuration = new Lwjgl3ApplicationConfiguration();
-        configuration.setTitle("2D Game Prototype");
+        configuration.setTitle("Lichtstrahlen");
         configuration.setWindowedMode(1280, 720);
         configuration.useVsync(true);
         configuration.setForegroundFPS(60);
